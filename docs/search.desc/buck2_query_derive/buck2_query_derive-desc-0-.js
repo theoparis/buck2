@@ -1,0 +1,1 @@
+searchState.loadedDescShard("buck2_query_derive", 0, "Generates a QueryFunctions and HasModuleDescription impls …")

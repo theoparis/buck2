@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["PathSegment","Scope","StepKind"],"fn":["dap_capabilities","prepare_dap_adapter","resolve_breakpoints"],"struct":["EvaluateExprInfo","InspectVariableInfo","ResolvedBreakpoints","ScopesInfo","Variable","VariablePath","VariablesInfo"],"trait":["DapAdapter","DapAdapterClient","DapAdapterEvalHook"]};

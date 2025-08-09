@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["EntryFile","ProjectKind","Target"],"struct":["LibFile","MainFile","New"]};

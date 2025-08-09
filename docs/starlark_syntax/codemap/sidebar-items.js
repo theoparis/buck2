@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["CodeMap","CodeMapId","CodeMaps","FileSpan","FileSpanRef","NativeCodeMap","Pos","ResolvedFileLine","ResolvedFileSpan","ResolvedPos","ResolvedSpan","Span","Spanned"]};

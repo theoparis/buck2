@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["DrawMode"],"mod":["alignment","bordering","padding","splitting"],"struct":["Blank","Bounded","DrawHorizontal","DrawVertical"],"trait":["Component"]};

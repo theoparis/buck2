@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["HostSharingRequirements","HostSharingStrategy","WeightClass"],"struct":["HostSharingBroker","HostSharingGuard","RequestedPermits","WeightPercentage"]};

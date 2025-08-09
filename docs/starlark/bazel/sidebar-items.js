@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["ContextError","FilesystemCompletionRoot","FilesystemFileCompletionOptions","RenderLoadError","ResolveLoadError"],"fn":["main"],"mod":["label"],"struct":["BazelContext","FilesystemCompletionOptions"]};

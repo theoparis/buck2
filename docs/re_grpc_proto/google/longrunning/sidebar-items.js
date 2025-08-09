@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["operation","operations_client","operations_server"],"struct":["CancelOperationRequest","DeleteOperationRequest","GetOperationRequest","ListOperationsRequest","ListOperationsResponse","Operation","OperationInfo","WaitOperationRequest"]};

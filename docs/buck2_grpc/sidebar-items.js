@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["make_channel","spawn_oneshot","to_tonic"],"struct":["DuplexChannel","ServerHandle"]};

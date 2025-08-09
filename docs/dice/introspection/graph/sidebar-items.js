@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["GraphIntrospectable","GraphNodeKind","HistoryState"],"fn":["short_type_name"],"struct":["CellHistory","KeyID","ModernIntrospectable","NodeID","SerializedGraphNode","SerializedGraphNodesForKey","VersionNumber"]};

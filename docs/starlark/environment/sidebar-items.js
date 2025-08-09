@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["LibraryExtension"],"struct":["FrozenModule","Globals","GlobalsBuilder","GlobalsStatic","Methods","MethodsBuilder","MethodsStatic","Module"]};

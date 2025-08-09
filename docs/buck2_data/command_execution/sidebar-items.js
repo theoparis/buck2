@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["Status"],"struct":["Cancelled","Error","Failure","Success","Timeout","WorkerFailure"]};

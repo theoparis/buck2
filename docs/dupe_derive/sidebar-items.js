@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"derive":["Clone_","Copy_","Dupe","Dupe_"]};

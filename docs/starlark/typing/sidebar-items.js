@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["ParamIsRequired","TyBasic","TypeRenderConfig","TypingBinOp","TypingUnOp"],"struct":["Approximation","Interface","ParamSpec","Ty","TyCallable","TyFunction","TyStarlarkValue","TyStruct","TyUser","TyUserFields","TyUserIndex","TyUserParams","TypeMap","TypingOracleCtx"],"trait":["AstModuleTypecheck"]};

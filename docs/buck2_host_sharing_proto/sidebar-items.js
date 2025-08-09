@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["host_sharing_requirements","weight_class"],"struct":["HostSharingRequirements","WeightClass"]};

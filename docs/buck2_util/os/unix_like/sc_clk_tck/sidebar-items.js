@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["sc_clk_tck"]};

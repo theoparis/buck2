@@ -1,0 +1,1 @@
+searchState.loadedDescShard("buck2_build_api_derive", 0, "Generates the starlark implementation for an internal …")

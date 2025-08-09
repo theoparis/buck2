@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["InternDisposition"],"struct":["Intern","Interner","Iter"],"trait":["Equivalent"]};

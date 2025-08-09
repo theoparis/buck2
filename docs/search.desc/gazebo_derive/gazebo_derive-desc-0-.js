@@ -1,0 +1,1 @@
+searchState.loadedDescShard("gazebo_derive", 0, "Derivations for the Gazebo library. Usually you would use …\nDerive the <code>Default</code> trait, but without requiring all type …\nDerive the <code>VariantName</code> trait.")

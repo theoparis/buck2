@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["ptr","ptr_lifetime","ptr_mut","ptr_to_usize","transmute_unchecked","usize_to_ptr"]};

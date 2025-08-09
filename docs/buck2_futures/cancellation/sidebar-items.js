@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["CriticalSectionGuard"],"struct":["CancellationContext","CancellationHandle","CancellationObserver","DisableCancellationGuard","DropcancelHandle"]};

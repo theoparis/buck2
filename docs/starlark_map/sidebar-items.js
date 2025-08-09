@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"macro":["smallmap","smallset"],"mod":["ordered_map","ordered_set","small_map","small_set","sorted_map","sorted_set","sorted_vec","unordered_map","unordered_set","vec2"],"struct":["Hashed","StarlarkHashValue","StarlarkHasher","StarlarkHasherBuilder"],"trait":["Equivalent"]};

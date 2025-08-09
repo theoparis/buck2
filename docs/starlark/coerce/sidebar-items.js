@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"derive":["Coerce"],"fn":["coerce"],"trait":["Coerce","CoerceKey"]};

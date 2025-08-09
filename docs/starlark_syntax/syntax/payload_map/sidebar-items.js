@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"trait":["ArgumentPExt","AssignIdentPExt","AssignTargetPExt","AstPayloadFunction","ExprPExt","FStringPExt","IdentPExt","ParameterPExt","StmtPExt","TypeExprPExt"]};

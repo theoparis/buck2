@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["StarlarkNever"],"struct":["FrozenStarlarkCallable","StarlarkCallable","StarlarkCallableChecked","StarlarkCallableParamAny","StarlarkIter","TypeCompiled","TypeInstanceId","TypeMatcherFactory","TypeType"],"trait":["StarlarkCallableParamSpec","TypeMatcher"]};

@@ -1,0 +1,1 @@
+searchState.loadedDescShard("dupe_derive", 0, "Derive the <code>Clone</code> trait, but without requiring all type …\nDerive the <code>Copy</code> trait, but without requiring all type …\nDerive the <code>Dupe</code> trait.\nDerive the <code>Dupe</code> trait, but without requiring all type …")

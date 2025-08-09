@@ -1,0 +1,40 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="A macro reducing boilerplace defining Starlark values which are simple - they aren’t mutable and can’t contain references to other Starlark values."><title>starlark_simple_value in starlark - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../static.files/rustdoc-069232aa.css"><meta name="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="starlark" data-themes="" data-resource-suffix="" data-rustdoc-version="1.91.0-nightly (2fd855fbf 2025-08-07)" data-channel="nightly" data-search-js="search-fa3e91e5.js" data-settings-js="settings-5514c975.js" ><script src="../static.files/storage-68b7e25d.js"></script><script defer src="sidebar-items.js"></script><script defer src="../static.files/main-eebb9057.js"></script><noscript><link rel="stylesheet" href="../static.files/noscript-32bb7600.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-6580c154.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-044be391.svg"></head><body class="rustdoc macro"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle" title="show sidebar"></button></nav><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../starlark/index.html">starlark</a><span class="version">0.13.0</span></h2></div><div class="sidebar-elems"><div id="rustdoc-modnav"></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="index.html">starlark</a></div><h1>Macro <span class="macro">starlark_simple_value</span><button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../src/starlark/macros.rs.html#178-221">Source</a> </span></div><pre class="rust item-decl"><code>macro_rules! starlark_simple_value {
+    ($x:ident) =&gt; { ... };
+}</code></pre><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>A macro reducing boilerplace defining Starlark values which are simple - they
+aren’t mutable and can’t contain references to other Starlark values.</p>
+<p>Let’s define a simple object, where <code>+x</code> makes the string uppercase:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>allocative::Allocative;
+<span class="kw">use </span>derive_more::Display;
+<span class="kw">use </span>starlark::starlark_simple_value;
+<span class="kw">use </span>starlark::values::Heap;
+<span class="kw">use </span>starlark::values::NoSerialize;
+<span class="kw">use </span>starlark::values::ProvidesStaticType;
+<span class="kw">use </span>starlark::values::StarlarkValue;
+<span class="kw">use </span>starlark::values::Value;
+<span class="kw">use </span>starlark_derive::starlark_value;
+
+<span class="attr">#[derive(Debug, Display, ProvidesStaticType, NoSerialize, Allocative)]
+</span><span class="kw">struct </span>MyObject(String);
+<span class="macro">starlark_simple_value!</span>(MyObject);
+
+<span class="attr">#[starlark_value(<span class="kw">type </span>= <span class="string">"my_object"</span>)]
+</span><span class="kw">impl</span>&lt;<span class="lifetime">'v</span>&gt; StarlarkValue&lt;<span class="lifetime">'v</span>&gt; <span class="kw">for </span>MyObject {
+    <span class="comment">// We can choose to implement whichever methods we want.
+    // All other operations will result in runtime errors.
+    </span><span class="kw">fn </span>plus(<span class="kw-2">&amp;</span><span class="self">self</span>, heap: <span class="kw-2">&amp;</span><span class="lifetime">'v </span>Heap) -&gt; starlark::Result&lt;Value&lt;<span class="lifetime">'v</span>&gt;&gt; {
+        <span class="prelude-val">Ok</span>(heap.alloc(MyObject(<span class="self">self</span>.<span class="number">0</span>.to_uppercase())))
+    }
+}</code></pre></div>
+<p>The <code>starlark_simple_value!</code> macro defines instances of
+<a href="any/trait.ProvidesStaticType.html" title="trait starlark::any::ProvidesStaticType"><code>ProvidesStaticType</code></a>,
+<a href="values/trait.AllocValue.html" title="trait starlark::values::AllocValue"><code>AllocValue</code></a>,
+<a href="values/trait.AllocFrozenValue.html" title="trait starlark::values::AllocFrozenValue"><code>AllocFrozenValue</code></a> and
+<a href="values/trait.UnpackValue.html" title="trait starlark::values::UnpackValue"><code>UnpackValue</code></a>. It also defines a method:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">impl </span>MyObject {
+    <span class="kw">pub fn </span>from_value&lt;<span class="lifetime">'v</span>&gt;(x: Value&lt;<span class="lifetime">'v</span>&gt;) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">'v </span>MyObject&gt; {
+        ...
+    }
+}</code></pre></div>
+</div></details></section></div></main></body></html>

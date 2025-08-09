@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["HealthCheckType","Severity"],"mod":["health_check_client","health_check_context_event","health_check_server","remediation"],"struct":["DisplayReport","Empty","HealthCheckContextEvent","HealthCheckResult","HealthIssue","Remediation","Report"]};

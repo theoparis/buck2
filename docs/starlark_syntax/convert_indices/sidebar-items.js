@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["convert_index","convert_indices"]};

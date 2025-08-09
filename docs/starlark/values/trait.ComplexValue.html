@@ -1,0 +1,102 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="A trait for values which are more complex - because they are either mutable (e.g. using `RefCell`), or contain references to other values."><title>ComplexValue in starlark::values - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../static.files/rustdoc-069232aa.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="starlark" data-themes="" data-resource-suffix="" data-rustdoc-version="1.91.0-nightly (2fd855fbf 2025-08-07)" data-channel="nightly" data-search-js="search-fa3e91e5.js" data-settings-js="settings-5514c975.js" ><script src="../../static.files/storage-68b7e25d.js"></script><script defer src="sidebar-items.js"></script><script defer src="../../static.files/main-eebb9057.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-32bb7600.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-6580c154.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-044be391.svg"></head><body class="rustdoc trait"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle" title="show sidebar"></button></nav><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../starlark/index.html">starlark</a><span class="version">0.13.0</span></h2></div><div class="sidebar-elems"><section id="rustdoc-toc"><h2 class="location"><a href="#">Complex<wbr>Value</a></h2><h3><a href="#">Sections</a></h3><ul class="block top-toc"><li><a href="#types-containing-value" title="Types containing `Value`">Types containing <code>Value</code></a></li><li><a href="#different-types" title="Different types">Different types</a></li><li><a href="#other-types" title="Other types">Other types</a></li></ul><h3><a href="#dyn-compatibility">Dyn Compatibility</a></h3><h3><a href="#implementors">Implementors</a></h3></section><div id="rustdoc-modnav"><h2><a href="index.html">In starlark::<wbr>values</a></h2></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="../index.html">starlark</a>::<wbr><a href="index.html">values</a></div><h1>Trait <span class="trait">ComplexValue</span><button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../../src/starlark/values/traits.rs.html#186-190">Source</a> </span></div><pre class="rust item-decl"><code>pub trait ComplexValue&lt;'v&gt;:
+    <a class="trait" href="trait.StarlarkValue.html" title="trait starlark::values::StarlarkValue">StarlarkValue</a>&lt;'v&gt;
+    + <a class="trait" href="trait.Trace.html" title="trait starlark::values::Trace">Trace</a>&lt;'v&gt;
+    + <a class="trait" href="trait.Freeze.html" title="trait starlark::values::Freeze">Freeze</a><div class="where">where
+    &lt;Self as <a class="trait" href="trait.Freeze.html" title="trait starlark::values::Freeze">Freeze</a>&gt;::<a class="associatedtype" href="trait.Freeze.html#associatedtype.Frozen" title="type starlark::values::Freeze::Frozen">Frozen</a>: <a class="trait" href="trait.StarlarkValue.html" title="trait starlark::values::StarlarkValue">StarlarkValue</a>&lt;'static&gt;,</div>{ }</code></pre><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>A trait for values which are more complex - because they are either mutable
+(e.g. using <a href="https://doc.rust-lang.org/nightly/core/cell/struct.RefCell.html" title="struct core::cell::RefCell"><code>RefCell</code></a>), or contain references to other values.</p>
+<p>For values that contain nested <a href="struct.Value.html" title="struct starlark::values::Value"><code>Value</code></a> types (mutable or not) there are a bunch of helpers
+and macros.</p>
+<h3 id="types-containing-value"><a class="doc-anchor" href="#types-containing-value">§</a>Types containing <a href="struct.Value.html" title="struct starlark::values::Value"><code>Value</code></a></h3>
+<p>A Starlark type containing values will need to exist in two states: one containing <a href="struct.Value.html" title="struct starlark::values::Value"><code>Value</code></a>
+and one containing <a href="struct.FrozenValue.html" title="struct starlark::values::FrozenValue"><code>FrozenValue</code></a>. To deal with that, if we are defining the type
+containing a single value, let’s call it <code>One</code>, we’d define <code>OneGen</code>
+(for the general version), and then have the
+<a href="../macro.starlark_complex_value.html" title="macro starlark::starlark_complex_value"><code>starlark_complex_value!</code></a> macro
+generate <code>One</code> and <code>FrozenOne</code> aliases.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>allocative::Allocative;
+<span class="kw">use </span>derive_more::Display;
+<span class="kw">use </span>starlark::starlark_complex_value;
+<span class="kw">use </span>starlark::values::Coerce;
+<span class="kw">use </span>starlark::values::ComplexValue;
+<span class="kw">use </span>starlark::values::Freeze;
+<span class="kw">use </span>starlark::values::FreezeResult;
+<span class="kw">use </span>starlark::values::Freezer;
+<span class="kw">use </span>starlark::values::FrozenValue;
+<span class="kw">use </span>starlark::values::NoSerialize;
+<span class="kw">use </span>starlark::values::ProvidesStaticType;
+<span class="kw">use </span>starlark::values::StarlarkValue;
+<span class="kw">use </span>starlark::values::Trace;
+<span class="kw">use </span>starlark::values::Tracer;
+<span class="kw">use </span>starlark::values::Value;
+<span class="kw">use </span>starlark::values::ValueLike;
+<span class="kw">use </span>starlark_derive::starlark_value;
+
+<span class="attr">#[derive(
+    Debug,
+    Trace,
+    Coerce,
+    Display,
+    ProvidesStaticType,
+    NoSerialize,
+    Allocative
+)]
+#[repr(C)]
+</span><span class="kw">struct </span>OneGen&lt;V&gt;(V);
+<span class="macro">starlark_complex_value!</span>(One);
+
+<span class="attr">#[starlark_value(<span class="kw">type </span>= <span class="string">"one"</span>)]
+</span><span class="kw">impl</span>&lt;<span class="lifetime">'v</span>, V: ValueLike&lt;<span class="lifetime">'v</span>&gt;&gt; StarlarkValue&lt;<span class="lifetime">'v</span>&gt; <span class="kw">for </span>OneGen&lt;V&gt;
+<span class="kw">where
+    </span><span class="self">Self</span>: ProvidesStaticType&lt;<span class="lifetime">'v</span>&gt;,
+{
+    <span class="comment">// To implement methods which work for both `One` and `FrozenOne`,
+    // use the `ValueLike` trait.
+</span>}
+
+<span class="kw">impl</span>&lt;<span class="lifetime">'v</span>&gt; Freeze <span class="kw">for </span>One&lt;<span class="lifetime">'v</span>&gt; {
+    <span class="kw">type </span>Frozen = FrozenOne;
+    <span class="kw">fn </span>freeze(<span class="self">self</span>, freezer: <span class="kw-2">&amp;</span>Freezer) -&gt; FreezeResult&lt;<span class="self">Self</span>::Frozen&gt; {
+        <span class="prelude-val">Ok</span>(OneGen(<span class="self">self</span>.<span class="number">0</span>.freeze(freezer)<span class="question-mark">?</span>))
+    }
+}</code></pre></div>
+<p>The <a href="../macro.starlark_complex_value.html" title="macro starlark::starlark_complex_value"><code>starlark_complex_value!</code></a> requires that
+the type have an instance for <code>Coerce</code>, then the macro defines two type aliases.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">type </span>One&lt;<span class="lifetime">'v</span>&gt; = OneGen&lt;Value&lt;<span class="lifetime">'v</span>&gt;&gt;;
+<span class="kw">type </span>FrozenOne = OneGen&lt;FrozenValue&gt;;</code></pre></div>
+<p>To make these aliases public (or public to the crate) pass a visibility
+to the macro, e.g. <code>starlark_complex_value!(pub One)</code>.</p>
+<p>The macro also defines instances of <a href="../any/trait.ProvidesStaticType.html" title="trait starlark::any::ProvidesStaticType"><code>ProvidesStaticType</code></a> for both,
+<a href="trait.AllocValue.html" title="trait starlark::values::AllocValue"><code>AllocValue</code></a> for both,
+<a href="trait.AllocFrozenValue.html" title="trait starlark::values::AllocFrozenValue"><code>AllocFrozenValue</code></a> for the frozen one, and
+<a href="trait.UnpackValue.html" title="trait starlark::values::UnpackValue"><code>UnpackValue</code></a> for the non-frozen one.
+It also defines the methods:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">impl</span>&lt;<span class="lifetime">'v</span>&gt; One&lt;<span class="lifetime">'v</span>&gt; {
+    <span class="comment">// Obtain a reference to `One` from a `Value`, regardless
+    // of whether the underlying `Value` is a `One` or `FrozenOne`.
+    </span><span class="kw">pub fn </span>from_value(x: Value&lt;<span class="lifetime">'v</span>&gt;) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">'v </span><span class="self">Self</span>&gt; {
+        ...
+    }
+}</code></pre></div>
+<h3 id="different-types"><a class="doc-anchor" href="#different-types">§</a>Different types</h3>
+<p>If the types are different between the frozen and non-frozen values you can define your own
+type specialisations as <code>type One&lt;'v&gt; = OneGen&lt;Value&lt;'v&gt;&gt;</code> and <code>type FrozenOne = OneGen&lt;String&gt;</code>
+and use <a href="../macro.starlark_complex_values.html" title="macro starlark::starlark_complex_values"><code>starlark_complex_values!</code></a> which will provide similar facilities to
+<a href="../macro.starlark_simple_value.html" title="macro starlark::starlark_simple_value"><code>starlark_complex_value!</code></a>.</p>
+<h3 id="other-types"><a class="doc-anchor" href="#other-types">§</a>Other types</h3>
+<p>The macro <a href="../macro.starlark_complex_value.html" title="macro starlark::starlark_complex_value"><code>starlark_complex_value!</code></a> is applicable
+when there is a single base type, <code>FooGen&lt;V&gt;</code>, with specialisations
+<code>FooGen&lt;Value&lt;'v&gt;&gt;</code> and <code>FooGen&lt;FrozenValue&gt;</code>.
+If you have a type where the difference between frozen and non-frozen does not follow this
+pattern then you will have to write instances of the traits you need manually.
+Examples of cases where the macro doesn’t work include:</p>
+<ul>
+<li>If your type doesn’t contain any <a href="struct.Value.html" title="struct starlark::values::Value"><code>Value</code></a> types, but instead implements this trait for mutability.</li>
+<li>If the difference between frozen and non-frozen is more complex, e.g. a <a href="https://doc.rust-lang.org/nightly/core/cell/struct.Cell.html" title="struct core::cell::Cell"><code>Cell</code></a>
+when non-frozen and a direct value when frozen.</li>
+</ul>
+</div></details><h2 id="dyn-compatibility" class="section-header">Dyn Compatibility<a href="#dyn-compatibility" class="anchor">§</a></h2><div class="dyn-compatibility-info"><p>This trait is <b>not</b> <a href="https://doc.rust-lang.org/nightly/reference/items/traits.html#dyn-compatibility">dyn compatible</a>.</p><p><i>In older versions of Rust, dyn compatibility was called "object safety", so this trait is not object safe.</i></p></div><h2 id="implementors" class="section-header">Implementors<a href="#implementors" class="anchor">§</a></h2><div id="implementors-list"><section id="impl-ComplexValue%3C'v%3E-for-V" class="impl"><a class="src rightside" href="../../src/starlark/values/traits.rs.html#192-197">Source</a><a href="#impl-ComplexValue%3C'v%3E-for-V" class="anchor">§</a><h3 class="code-header">impl&lt;'v, V&gt; <a class="trait" href="trait.ComplexValue.html" title="trait starlark::values::ComplexValue">ComplexValue</a>&lt;'v&gt; for V<div class="where">where
+    V: <a class="trait" href="trait.StarlarkValue.html" title="trait starlark::values::StarlarkValue">StarlarkValue</a>&lt;'v&gt; + <a class="trait" href="trait.Trace.html" title="trait starlark::values::Trace">Trace</a>&lt;'v&gt; + <a class="trait" href="trait.Freeze.html" title="trait starlark::values::Freeze">Freeze</a>,
+    &lt;V as <a class="trait" href="trait.Freeze.html" title="trait starlark::values::Freeze">Freeze</a>&gt;::<a class="associatedtype" href="trait.Freeze.html#associatedtype.Frozen" title="type starlark::values::Freeze::Frozen">Frozen</a>: <a class="trait" href="trait.StarlarkValue.html" title="trait starlark::values::StarlarkValue">StarlarkValue</a>&lt;'static&gt;,</div></h3></section></div><script src="../../trait.impl/starlark/values/traits/trait.ComplexValue.js" async></script></section></div></main></body></html>

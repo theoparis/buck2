@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["Command","JsonArguments","SysrootMode"],"fn":["build_info","fb_build_info_from_elf","main"],"mod":["buck","cli","diagnostics","path","progress","project_json","scuba","sysroot","target"],"struct":["Opt"]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"derive":["StarlarkTypeRepr"],"struct":["SetType"],"trait":["StarlarkTypeRepr"]};

@@ -1,0 +1,39 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Provides utilities to implement `Display`, which also provides an “alternate” display."><title>display_container - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../static.files/rustdoc-069232aa.css"><meta name="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="display_container" data-themes="" data-resource-suffix="" data-rustdoc-version="1.91.0-nightly (2fd855fbf 2025-08-07)" data-channel="nightly" data-search-js="search-fa3e91e5.js" data-settings-js="settings-5514c975.js" ><script src="../static.files/storage-68b7e25d.js"></script><script defer src="../crates.js"></script><script defer src="../static.files/main-eebb9057.js"></script><noscript><link rel="stylesheet" href="../static.files/noscript-32bb7600.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-6580c154.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-044be391.svg"></head><body class="rustdoc mod crate"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle" title="show sidebar"></button></nav><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../display_container/index.html">display_<wbr>container</a><span class="version">0.9.0</span></h2></div><div class="sidebar-elems"><ul class="block"><li><a id="all-types" href="all.html">All Items</a></li></ul><section id="rustdoc-toc"><h3><a href="#functions">Crate Items</a></h3><ul class="block"><li><a href="#functions" title="Functions">Functions</a></li></ul></section><div id="rustdoc-modnav"></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="main-heading"><h1>Crate <span>display_container</span><button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../src/display_container/lib.rs.html#11-362">Source</a> </span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Provides utilities to implement <code>Display</code>, which also provides an “alternate” display.</p>
+<p>As an example of using these combinators:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>std::fmt;
+
+<span class="kw">use </span>display_container::<span class="kw-2">*</span>;
+
+<span class="kw">struct </span>MyItems(Vec&lt;(String, i32)&gt;);
+
+<span class="kw">impl </span>fmt::Display <span class="kw">for </span>MyItems {
+    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter) -&gt; fmt::Result {
+        fmt_container(
+            f,
+            <span class="string">"{"</span>,
+            <span class="string">"}"</span>,
+            iter_display_chain(
+                <span class="kw-2">&amp;</span>[<span class="string">"magic"</span>],
+                <span class="self">self</span>.<span class="number">0</span>.iter().map(|(k, v)| display_pair(k, <span class="string">"="</span>, v)),
+            ),
+        )
+    }
+}</code></pre></div>
+<p>Would produce results such as:</p>
+
+<div class="example-wrap ignore"><a href="#" class="tooltip" title="This example is not tested">ⓘ</a><pre class="rust rust-example-rendered"><code>{magic, hello=<span class="number">1</span>, world=<span class="number">2</span>}</code></pre></div>
+<p>For “normal” display, produces output like (with <code>prefix="prefix[", suffix="]"</code>):</p>
+<p><code>prefix[]</code>
+<code>prefix[1]</code>
+<code>prefix[1, 2]</code></p>
+<p>For “alternate” display, produces output like:</p>
+<p><code>prefix[]</code>
+<code>prefix[ 1 ]</code></p>
+
+<div class="example-wrap ignore"><a href="#" class="tooltip" title="This example is not tested">ⓘ</a><pre class="rust rust-example-rendered"><code>prefix[
+  <span class="number">1</span>,
+  <span class="number">2
+</span>]</code></pre></div>
+<p>This doesn’t propagate the flags on the Formatter other than alternate.</p>
+</div></details><h2 id="functions" class="section-header">Functions<a href="#functions" class="anchor">§</a></h2><dl class="item-table"><dt><a class="fn" href="fn.display_container.html" title="fn display_container::display_container">display_<wbr>container</a></dt><dd>Helper for display implementation of container-y types (like list, tuple).</dd><dt><a class="fn" href="fn.display_pair.html" title="fn display_container::display_pair">display_<wbr>pair</a></dt><dd>Display a pair of elements with a separator in the middle.</dd><dt><a class="fn" href="fn.fmt_container.html" title="fn display_container::fmt_container">fmt_<wbr>container</a></dt><dd>Helper for display implementation of container-y types (like list, tuple).</dd><dt><a class="fn" href="fn.fmt_keyed_container.html" title="fn display_container::fmt_keyed_container">fmt_<wbr>keyed_<wbr>container</a></dt><dd>Helper for display implementation of container-y types (like dict, struct).</dd><dt><a class="fn" href="fn.iter_display_chain.html" title="fn display_container::iter_display_chain">iter_<wbr>display_<wbr>chain</a></dt><dd>Chain two iterators together that produce <code>Display</code> items.</dd></dl></section></div></main></body></html>

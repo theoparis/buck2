@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["downward_api_client","downward_api_server","event","log_level"],"struct":["ConsoleRequest","Empty","Event","ExternalEventRequest","LogLevel","LogRequest"]};

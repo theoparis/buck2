@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["BOOL_TYPE"],"struct":["StarlarkBool"]};

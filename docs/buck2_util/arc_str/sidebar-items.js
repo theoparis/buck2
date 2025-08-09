@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["ArcS","ArcSlice","ArcStr","ThinArcS","ThinArcSlice","ThinArcStr"],"trait":["StringInside"]};

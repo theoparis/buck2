@@ -1,0 +1,169 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="The dynamic incremental caching computation engine that powers buckv2."><title>dice - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../static.files/rustdoc-069232aa.css"><meta name="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="dice" data-themes="" data-resource-suffix="" data-rustdoc-version="1.91.0-nightly (2fd855fbf 2025-08-07)" data-channel="nightly" data-search-js="search-fa3e91e5.js" data-settings-js="settings-5514c975.js" ><script src="../static.files/storage-68b7e25d.js"></script><script defer src="../crates.js"></script><script defer src="../static.files/main-eebb9057.js"></script><noscript><link rel="stylesheet" href="../static.files/noscript-32bb7600.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-6580c154.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-044be391.svg"></head><body class="rustdoc mod crate"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle" title="show sidebar"></button></nav><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../dice/index.html">dice</a><span class="version">0.1.0</span></h2></div><div class="sidebar-elems"><ul class="block"><li><a id="all-types" href="all.html">All Items</a></li></ul><section id="rustdoc-toc"><h3><a href="#modules">Crate Items</a></h3><ul class="block"><li><a href="#modules" title="Modules">Modules</a></li><li><a href="#structs" title="Structs">Structs</a></li><li><a href="#enums" title="Enums">Enums</a></li><li><a href="#traits" title="Traits">Traits</a></li></ul></section><div id="rustdoc-modnav"></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="main-heading"><h1>Crate <span>dice</span><button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../src/dice/lib.rs.html#11-318">Source</a> </span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>The dynamic incremental caching computation engine that powers buckv2.</p>
+<p>The computation engine will output values corresponding to given <code>Key</code>s,
+reusing previously computed values when possible. <code>Key</code>s computations are
+allowed to request other <code>Key</code>s via a <code>ComputationContext</code>.</p>
+<p>Example:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">mod </span>c {
+
+    <span class="doccomment">/// declaring computations:
+    </span><span class="kw">use </span>async_trait::async_trait;
+    <span class="kw">use </span>derive_more::Display;
+    <span class="kw">use </span>dice::{Key, InjectedKey, DiceComputations, DiceDataBuilder, DiceData, DiceTransactionUpdater};
+    <span class="kw">use </span>std::sync::Arc;
+    <span class="kw">use </span>allocative::Allocative;
+<span class="kw">use </span>buck2_futures::cancellation::CancellationContext;
+
+    <span class="doccomment">/// A configuration computation that consists of values that are pre-computed outside of DICE
+    </span><span class="kw">pub struct </span>InjectConfigs&lt;<span class="lifetime">'compute</span>, <span class="lifetime">'d</span>&gt;(<span class="kw-2">&amp;</span><span class="lifetime">'compute </span><span class="kw-2">mut </span>DiceComputations&lt;<span class="lifetime">'d</span>&gt;);
+
+    <span class="kw">impl</span>&lt;<span class="lifetime">'compute</span>, <span class="lifetime">'d</span>&gt; InjectConfigs&lt;<span class="lifetime">'compute</span>, <span class="lifetime">'d</span>&gt; {
+        <span class="kw">pub async fn </span>get_config(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; usize {
+            <span class="self">self</span>.<span class="number">0</span>.compute(<span class="kw-2">&amp;</span>ConfigKey).<span class="kw">await</span>.unwrap()
+        }
+    }
+
+    <span class="attr">#[derive(Clone, Debug, Display, Eq, Hash, PartialEq, Allocative)]
+    #[display(<span class="string">"{:?}"</span>, <span class="self">self</span>)]
+    </span><span class="kw">struct </span>ConfigKey;
+
+    <span class="attr">#[async_trait]
+    </span><span class="kw">impl </span>InjectedKey <span class="kw">for </span>ConfigKey {
+        <span class="kw">type </span>Value = usize;
+
+        <span class="kw">fn </span>equality(x: <span class="kw-2">&amp;</span><span class="self">Self</span>::Value,y: <span class="kw-2">&amp;</span><span class="self">Self</span>::Value) -&gt; bool {
+            x == y
+        }
+    }
+
+    <span class="kw">pub struct </span>MyComputation&lt;<span class="lifetime">'compute</span>, <span class="lifetime">'d</span>&gt;(<span class="kw">pub </span><span class="kw-2">&amp;</span><span class="lifetime">'compute </span><span class="kw-2">mut </span>DiceComputations&lt;<span class="lifetime">'d</span>&gt;);
+
+    <span class="kw">impl</span>&lt;<span class="lifetime">'compute</span>, <span class="lifetime">'d</span>&gt; MyComputation&lt;<span class="lifetime">'compute</span>, <span class="lifetime">'d</span>&gt; {
+        <span class="comment">// declaring a computation function
+        </span><span class="kw">pub async fn </span>compute_a(<span class="kw-2">&amp;mut </span><span class="self">self</span>, a: usize, s: String) -&gt; Arc&lt;String&gt; {
+            <span class="attr">#[derive(Clone, Display, Debug, Eq, Hash, PartialEq, Allocative)]
+            #[display(<span class="string">"{:?}"</span>, <span class="self">self</span>)]
+            </span><span class="kw">struct </span>ComputeA(usize, String);
+
+            <span class="attr">#[async_trait]
+            </span><span class="kw">impl </span>Key <span class="kw">for </span>ComputeA {
+                <span class="kw">type </span>Value = Arc&lt;String&gt;;
+
+                <span class="kw">async fn </span>compute(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>DiceComputations, _cancellations: <span class="kw-2">&amp;</span>CancellationContext) -&gt; <span class="self">Self</span>::Value {
+                    <span class="comment">// request for other computations on the self
+                    </span><span class="kw">let </span>n = MyComputation(ctx).compute_b(<span class="self">self</span>.<span class="number">0</span>).<span class="kw">await</span>;
+                    Arc::new(<span class="self">self</span>.<span class="number">1</span>.repeat(n))
+                }
+
+                <span class="kw">fn </span>equality(x: <span class="kw-2">&amp;</span><span class="self">Self</span>::Value,y: <span class="kw-2">&amp;</span><span class="self">Self</span>::Value) -&gt; bool {
+                    x == y
+                }
+            }
+
+            <span class="self">self</span>.<span class="number">0</span>.compute(<span class="kw-2">&amp;</span>ComputeA(a, s)).<span class="kw">await</span>.unwrap()
+        }
+
+        <span class="comment">// second computation function
+        </span><span class="kw">pub async fn </span>compute_b(<span class="kw-2">&amp;mut </span><span class="self">self</span>, a: usize) -&gt; usize {
+                <span class="self">self</span>.<span class="number">0</span>.compute(<span class="kw-2">&amp;</span>ComputeB(a)).<span class="kw">await</span>.unwrap()
+        }
+    }
+
+    <span class="attr">#[derive(Clone, Display, Debug, Eq, Hash, PartialEq, Allocative)]
+    #[display(<span class="string">"{:?}"</span>, <span class="self">self</span>)]
+    </span><span class="kw">struct </span>ComputeB(usize);
+
+    <span class="attr">#[async_trait]
+    </span><span class="kw">impl </span>Key <span class="kw">for </span>ComputeB {
+        <span class="kw">type </span>Value = usize;
+
+        <span class="kw">async fn </span>compute(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>DiceComputations, cancellations: <span class="kw-2">&amp;</span>CancellationContext) -&gt; <span class="self">Self</span>::Value {
+            <span class="self">self</span>.<span class="number">0 </span>+ InjectConfigs(ctx).get_config().<span class="kw">await </span>+ ctx.global_data().static_data().len()
+        }
+
+        <span class="kw">fn </span>equality(x: <span class="kw-2">&amp;</span><span class="self">Self</span>::Value,y: <span class="kw-2">&amp;</span><span class="self">Self</span>::Value) -&gt; bool {
+            x == y
+        }
+    }
+
+    <span class="kw">pub trait </span>SetInjectedConfig {
+        <span class="kw">fn </span>inject_config(<span class="kw-2">&amp;mut </span><span class="self">self</span>, i: usize);
+    }
+
+    <span class="kw">impl </span>SetInjectedConfig <span class="kw">for </span>DiceTransactionUpdater {
+        <span class="doccomment">/// ways to inject the precomputed values to dice
+        </span><span class="kw">fn </span>inject_config(<span class="kw-2">&amp;mut </span><span class="self">self</span>, i: usize) {
+            <span class="self">self</span>.changed_to(<span class="macro">vec!</span>[(ConfigKey, i)]).unwrap()
+        }
+    }
+
+    <span class="kw">pub trait </span>StaticData {
+        <span class="kw">fn </span>static_data(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>String;
+    }
+
+    <span class="kw">impl </span>StaticData <span class="kw">for </span>DiceData {
+        <span class="kw">fn </span>static_data(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>String {
+            <span class="self">self</span>.get::&lt;String&gt;().unwrap()
+        }
+    }
+
+    <span class="kw">pub trait </span>SetStaticData {
+        <span class="kw">fn </span>set_static(<span class="kw-2">&amp;mut </span><span class="self">self</span>, s: String);
+    }
+
+    <span class="kw">impl </span>SetStaticData <span class="kw">for </span>DiceDataBuilder {
+        <span class="kw">fn </span>set_static(<span class="kw-2">&amp;mut </span><span class="self">self</span>, s: String) {
+            <span class="self">self</span>.set(s);
+        }
+    }
+}
+
+<span class="doccomment">/// how to use computations
+</span><span class="kw">use </span>dice::{Dice, DetectCycles};
+<span class="kw">use </span>std::sync::Arc;
+<span class="kw">use </span>c::<span class="kw-2">*</span>;
+
+<span class="kw">let </span><span class="kw-2">mut </span>rt = tokio::runtime::Runtime::new().unwrap();
+<span class="kw">let </span><span class="kw-2">mut </span>builder = Dice::builder();
+builder.set_static(<span class="string">"len4"</span>.into());
+<span class="kw">let </span>engine = builder.build(DetectCycles::Disabled);
+
+<span class="comment">// inject config
+</span><span class="kw">let </span><span class="kw-2">mut </span>ctx = engine.updater();
+ctx.inject_config(<span class="number">0</span>);
+
+<span class="kw">let </span><span class="kw-2">mut </span>ctx = rt.block_on(ctx.commit());
+
+<span class="comment">// request the computation from DICE
+</span>rt.block_on(<span class="kw">async </span>{
+    <span class="macro">assert_eq!</span>(<span class="string">"aaaaaaaa"</span>, <span class="kw-2">&amp;*</span>MyComputation(<span class="kw-2">&amp;mut </span>ctx).compute_a(<span class="number">4</span>, <span class="string">"a"</span>.into()).<span class="kw">await</span>);
+});
+
+<span class="kw">let </span><span class="kw-2">mut </span>ctx = engine.updater();
+ctx.inject_config(<span class="number">2</span>);
+
+<span class="kw">let </span><span class="kw-2">mut </span>ctx = rt.block_on(ctx.commit());
+
+<span class="comment">// request the computation from DICE
+</span>rt.block_on(<span class="kw">async </span>{
+    <span class="macro">assert_eq!</span>(<span class="string">"aaaaaaaaaa"</span>, <span class="kw-2">&amp;*</span>MyComputation(<span class="kw-2">&amp;mut </span>ctx).compute_a(<span class="number">4</span>, <span class="string">"a"</span>.into()).<span class="kw">await</span>);
+});</code></pre></div>
+</div></details><h2 id="modules" class="section-header">Modules<a href="#modules" class="anchor">§</a></h2><dl class="item-table"><dt><a class="mod" href="introspection/index.html" title="mod dice::introspection">introspection</a></dt><dd>Interfaces for introspection of the DICE graph</dd><dt><a class="mod" href="testing/index.html" title="mod dice::testing">testing</a></dt></dl><h2 id="structs" class="section-header">Structs<a href="#structs" class="anchor">§</a></h2><dl class="item-table"><dt><a class="struct" href="struct.CancellableJoinHandle.html" title="struct dice::CancellableJoinHandle">Cancellable<wbr>Join<wbr>Handle</a></dt><dt><a class="struct" href="struct.CancellationContext.html" title="struct dice::CancellationContext">Cancellation<wbr>Context</a></dt><dd>Context available to the function running inside the future to control and manage it’s own
+cancellation</dd><dt><a class="struct" href="struct.CancellationHandle.html" title="struct dice::CancellationHandle">Cancellation<wbr>Handle</a></dt><dd>A handle providing the ability to explicitly cancel the associated ExplicitlyCancellableFuture.</dd><dt><a class="struct" href="struct.Demand.html" title="struct dice::Demand">Demand</a></dt><dd>Supplied value can be passed using this object.</dd><dt><a class="struct" href="struct.Dice.html" title="struct dice::Dice">Dice</a></dt><dd>An incremental computation engine that executes arbitrary computations that
+maps <code>Key</code>s to values.</dd><dt><a class="struct" href="struct.DiceComputations.html" title="struct dice::DiceComputations">Dice<wbr>Computations</a></dt><dd>The context for computations to register themselves, and request for additional dependencies.
+The dependencies accessed are tracked for caching via the <code>DiceCtx</code>.</dd><dt><a class="struct" href="struct.DiceData.html" title="struct dice::DiceData">Dice<wbr>Data</a></dt><dt><a class="struct" href="struct.DiceDataBuilder.html" title="struct dice::DiceDataBuilder">Dice<wbr>Data<wbr>Builder</a></dt><dt><a class="struct" href="struct.DiceEquality.html" title="struct dice::DiceEquality">Dice<wbr>Equality</a></dt><dt><a class="struct" href="struct.DiceInvalidationPath.html" title="struct dice::DiceInvalidationPath">Dice<wbr>Invalidation<wbr>Path</a></dt><dt><a class="struct" href="struct.DiceKeyTrackedInvalidationPaths.html" title="struct dice::DiceKeyTrackedInvalidationPaths">Dice<wbr>KeyTracked<wbr>Invalidation<wbr>Paths</a></dt><dd>The invalidation paths for a key. This is accessible from <a href="struct.DiceComputations.html#method.get_invalidation_paths" title="method dice::DiceComputations::get_invalidation_paths"><code>crate::DiceComputations::get_invalidation_paths()</code></a></dd><dt><a class="struct" href="struct.DiceProjectionComputations.html" title="struct dice::DiceProjectionComputations">Dice<wbr>Projection<wbr>Computations</a></dt><dd>Context for projection key computation.</dd><dt><a class="struct" href="struct.DiceTransaction.html" title="struct dice::DiceTransaction">Dice<wbr>Transaction</a></dt><dd>The base struct for which all computations start. This is clonable, and dupe, and can be
+moved to different runtimes to start computations.
+All computations on this transaction will see only changes at the most-up-to-date version at
+the time of creation of this transaction.</dd><dt><a class="struct" href="struct.DiceTransactionUpdater.html" title="struct dice::DiceTransactionUpdater">Dice<wbr>Transaction<wbr>Updater</a></dt><dd>The struct for which we build transactions. This is where changes are recorded, and committed
+to DICE, which returns the Transaction where we spawn computations.</dd><dt><a class="struct" href="struct.DynKey.html" title="struct dice::DynKey">DynKey</a></dt><dd>A type erased Key. Dice APIs that return key references will pass them as DynKey (unless they can be
+passed as the specific Key type).</dd><dt><a class="struct" href="struct.GlobalStats.html" title="struct dice::GlobalStats">Global<wbr>Stats</a></dt><dd>Provides informative stats over all dice instances.</dd><dt><a class="struct" href="struct.InvalidationPathEntry.html" title="struct dice::InvalidationPathEntry">Invalidation<wbr>Path<wbr>Entry</a></dt><dd>A node in the invalidation path.</dd><dt><a class="struct" href="struct.LinearRecomputeDiceComputations.html" title="struct dice::LinearRecomputeDiceComputations">Linear<wbr>Recompute<wbr>Dice<wbr>Computations</a></dt><dt><a class="struct" href="struct.OpaqueValue.html" title="struct dice::OpaqueValue">Opaque<wbr>Value</a></dt><dd>Computed value which is not directly visible to user.</dd><dt><a class="struct" href="struct.UserComputationData.html" title="struct dice::UserComputationData">User<wbr>Computation<wbr>Data</a></dt><dd>Includes all user related computation-specific data.</dd></dl><h2 id="enums" class="section-header">Enums<a href="#enums" class="anchor">§</a></h2><dl class="item-table"><dt><a class="enum" href="enum.ActivationData.html" title="enum dice::ActivationData">Activation<wbr>Data</a></dt><dd>Describes the kind of activation, and possibly carries data passed by the key’s evaluation.</dd><dt><a class="enum" href="enum.DetectCycles.html" title="enum dice::DetectCycles">Detect<wbr>Cycles</a></dt><dt><a class="enum" href="enum.DiceEvent.html" title="enum dice::DiceEvent">Dice<wbr>Event</a></dt><dt><a class="enum" href="enum.DiceTrackedInvalidationPath.html" title="enum dice::DiceTrackedInvalidationPath">Dice<wbr>Tracked<wbr>Invalidation<wbr>Path</a></dt><dd>The invalidation path state for a computation node.</dd><dt><a class="enum" href="enum.InvalidationSourcePriority.html" title="enum dice::InvalidationSourcePriority">Invalidation<wbr>Source<wbr>Priority</a></dt><dd>Dice tracks up to two invalidation paths for each node, a normal priority and a
+high priority one. The high priority one considers root invalidated Keys that have a High priority,
+the normal priority one will consider both Normal and High. The InvalidationSourcePriority
+is used only for the priority of the Key as a source of invalidation, all nodes participate
+in both normal and high for propagating invalidations.</dd><dt><a class="enum" href="enum.WeakFutureError.html" title="enum dice::WeakFutureError">Weak<wbr>Future<wbr>Error</a></dt></dl><h2 id="traits" class="section-header">Traits<a href="#traits" class="anchor">§</a></h2><dl class="item-table"><dt><a class="trait" href="trait.ActivationTracker.html" title="trait dice::ActivationTracker">Activation<wbr>Tracker</a></dt><dd>An ActivationTracker can be used to identify which keys were either reused or computed during a
+transaction.</dd><dt><a class="trait" href="trait.DiceEventListener.html" title="trait dice::DiceEventListener">Dice<wbr>Event<wbr>Listener</a></dt><dt><a class="trait" href="trait.InjectedKey.html" title="trait dice::InjectedKey">Injected<wbr>Key</a></dt><dd>Specialized version of <code>Key</code> above. This type of Key is never computed. It
+should always be injected onto the graph before being requested via
+<code>DiceCtx::changed_to(Key, Value)</code>. Therefore, the <code>compute</code> function on this
+Key is never called.</dd><dt><a class="trait" href="trait.Key.html" title="trait dice::Key">Key</a></dt><dd>The computation Key that maps to a value. The key will be used as an index
+for caching the computed values.</dd><dt><a class="trait" href="trait.ProjectionKey.html" title="trait dice::ProjectionKey">Projection<wbr>Key</a></dt><dd>Synchronously computed key from an “opaque” value.</dd><dt><a class="trait" href="trait.UserCycleDetector.html" title="trait dice::UserCycleDetector">User<wbr>Cycle<wbr>Detector</a></dt><dd>A UserCycleDetector can be used for custom cycle detection in the DICE computation.</dd><dt><a class="trait" href="trait.UserCycleDetectorGuard.html" title="trait dice::UserCycleDetectorGuard">User<wbr>Cycle<wbr>Detector<wbr>Guard</a></dt><dd>A UserCycleDetectorGuard is used to track the currently computing key. User code can access this through
+ComputationData::cycle_guard() (and then downcast it with as_any to potentially access custom cycle behavior).</dd></dl></section></div></main></body></html>

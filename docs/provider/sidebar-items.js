@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["request_ref","request_value"],"struct":["Demand"],"trait":["Provider"]};

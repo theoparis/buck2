@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"derive":["Default_"],"trait":["IterExt","IterOwned","OptionExt","SliceClonedExt","SliceCopiedExt","SliceDupedExt","SliceExt","VecExt"]};

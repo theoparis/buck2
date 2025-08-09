@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["HorizontalAlignmentKind","VerticalAlignmentKind"],"struct":["Aligned"]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["Resource"],"struct":["Company","LookupCompany","LookupResource","Recipe"],"trait":["Cost","CostUpdater","Setup"]};

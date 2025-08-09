@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["BUCK2_WRAPPER_ENV_VAR","BUCK_WRAPPER_START_TIME_ENV_VAR","BUCK_WRAPPER_UUID_ENV_VAR","DOT_BUCKCONFIG_D","EXPERIMENTS_FILENAME"],"fn":["killall"],"mod":["invocation_id","is_buck2","kill","pid"]};

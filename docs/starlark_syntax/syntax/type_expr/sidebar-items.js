@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["TypeExprUnpackError","TypeExprUnpackP"],"fn":["type_str_literal_is_wildcard"],"struct":["TypePathP"]};

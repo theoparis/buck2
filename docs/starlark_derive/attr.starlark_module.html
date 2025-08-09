@@ -1,0 +1,63 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Write Starlark modules concisely in Rust syntax."><title>starlark_module in starlark_derive - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../static.files/rustdoc-069232aa.css"><meta name="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="starlark_derive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.91.0-nightly (2fd855fbf 2025-08-07)" data-channel="nightly" data-search-js="search-fa3e91e5.js" data-settings-js="settings-5514c975.js" ><script src="../static.files/storage-68b7e25d.js"></script><script defer src="sidebar-items.js"></script><script defer src="../static.files/main-eebb9057.js"></script><noscript><link rel="stylesheet" href="../static.files/noscript-32bb7600.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-6580c154.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-044be391.svg"></head><body class="rustdoc attr"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle" title="show sidebar"></button></nav><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../starlark_derive/index.html">starlark_<wbr>derive</a><span class="version">0.13.0</span></h2></div><div class="sidebar-elems"><div id="rustdoc-modnav"></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="index.html">starlark_derive</a></div><h1>Attribute Macro <span class="attr">starlark_module</span><button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../src/starlark_derive/lib.rs.html#116-118">Source</a> </span></div><pre class="rust item-decl"><code>#[starlark_module]</code></pre><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Write Starlark modules concisely in Rust syntax.</p>
+<p>For example:</p>
+
+<div class="example-wrap ignore"><a href="#" class="tooltip" title="This example is not tested">ⓘ</a><pre class="rust rust-example-rendered"><code><span class="attr">#[starlark_module]
+</span><span class="kw">fn </span>global(builder: <span class="kw-2">&amp;mut </span>GlobalsBuilder) {
+    <span class="kw">fn </span>cc_binary(name: <span class="kw-2">&amp;</span>str, srcs: Vec&lt;<span class="kw-2">&amp;</span>str&gt;) -&gt; String {
+        <span class="prelude-val">Ok</span>(<span class="macro">format!</span>(<span class="string">"{:?} {:?}"</span>, name, srcs))
+    }
+}</code></pre></div>
+<p>Parameters operate as named parameters of a given type. Each parameter will be unpacked with <code>UnpackValue</code>, unless:</p>
+<ul>
+<li>It is type <code>Option</code>, in which case it will be considered optional.</li>
+<li>It is a single argument of type <code>Arguments</code>, in which case all arguments will be passed together with minimal interpretation.</li>
+</ul>
+<p>There are a number of attributes that can be add to each parameter by writing attributes before the
+parameter name:</p>
+<ul>
+<li><code>#[starlark(default = "a default")]</code> - provide a default for the parameter if it is omitted – the value given here must
+be the exact same Rust type as the Rust argument</li>
+<li><code>#[starlark(require = pos)]</code> - require the parameter to be passed by position, not named.</li>
+<li><code>#[starlark(require = named)]</code> - require the parameter to be passed by name, not by position.</li>
+<li><code>#[starlark(args)]</code> - treat the argument as <code>*args</code> in Starlark, receiving all additional positional arguments as a tuple.</li>
+<li><code>#[starlark(kwargs)]</code> - treat the argument as <code>**kwargs</code> in Starlark, receiving all additional named arguments as a dictionary.</li>
+</ul>
+<p>There are a number of attributes that can be applied to the entire function by writing attributes
+before the <code>fn</code> of the function:</p>
+<ul>
+<li><code>#[starlark(attribute_type = "foo")]</code> - if the function has <code>.type</code> applied, return this string. Usually used on
+constructor functions so that <code>ctor.type</code> can be used in Starlark code.</li>
+<li><code>#[starlark(speculative_exec_safe)]</code> - the function
+is considered safe to execute speculatively: the function should have
+no global side effects, should not panic, and should finish in reasonable time.
+The evaluator may invoke such functions early to generate more efficient code.</li>
+<li><code>#[starlark(attribute)]</code> to turn the name into
+an attribute on the value. Such a function must take exactly one argument, namely a value
+of the type you have attached it to.</li>
+</ul>
+<p>Multiple attributes can be specified either separately <code>#[starlark(require = named)] #[starlark(default = "")]</code> or
+separated with a comman <code>#[starlark(require = named, default = "")]</code>.</p>
+<p>There are two special arguments, distinguished by their type, which provides access to interpreter state:</p>
+<ul>
+<li><code>heap: &amp;'v Heap</code> gives access to the Starlark heap, for allocating things.</li>
+<li><code>eval: &amp;mut Evaluator&lt;'v, '_, '_&gt;</code> gives access to the Starlark evaluator, which can be used to look at interpreter state.</li>
+</ul>
+<p>A module can be used to define globals (with <code>GlobalsBuilder</code>) or methods on an object (with <code>MethodsBuilder</code>).
+In the case of methods, the first argument to each function will be the object itself, typically named <code>this</code>.</p>
+<p>All these functions interoperate properly with <code>dir()</code>, <code>getattr()</code> and <code>hasattr()</code>.</p>
+<p>If a desired function name is also a Rust keyword, use the <code>r#</code> prefix, e.g. <code>r#type</code>.</p>
+<p>As a more complex example:</p>
+
+<div class="example-wrap ignore"><a href="#" class="tooltip" title="This example is not tested">ⓘ</a><pre class="rust rust-example-rendered"><code><span class="attr">#[starlark_module]
+</span><span class="kw">fn </span>methods(builder: <span class="kw-2">&amp;mut </span>MethodsBuilder) {
+    <span class="kw">fn </span>r#enum&lt;<span class="lifetime">'v</span>&gt;(
+        this: Value&lt;<span class="lifetime">'v</span>&gt;,
+        <span class="attr">#[starlark(require = named, default = <span class="number">3</span>)] </span>index: i32,
+        heap: <span class="kw-2">&amp;</span><span class="lifetime">'v </span>Heap,
+    ) -&gt; anyhow::Result&lt;StringValue&lt;<span class="lifetime">'v</span>&gt;&gt; {
+        <span class="prelude-val">Ok</span>(heap.alloc_str(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">"{this} {index}"</span>)))
+    }
+}</code></pre></div>
+<p>This defines a method such that when attached to an object <code>object.enum(index = 12)</code> will
+return the string of the object and the index.</p>
+</div></details></section></div></main></body></html>

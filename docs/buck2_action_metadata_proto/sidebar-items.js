@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"static":["REMOTE_DEP_FILE_KEY"],"struct":["DepFileInputs","RemoteDepFile"]};

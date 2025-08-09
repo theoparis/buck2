@@ -1,0 +1,47 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="A type `StarlarkAny` which can cheaply wrap any Rust value into a `Value`."><title>starlark::values::any - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-069232aa.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="starlark" data-themes="" data-resource-suffix="" data-rustdoc-version="1.91.0-nightly (2fd855fbf 2025-08-07)" data-channel="nightly" data-search-js="search-fa3e91e5.js" data-settings-js="settings-5514c975.js" ><script src="../../../static.files/storage-68b7e25d.js"></script><script defer src="../sidebar-items.js"></script><script defer src="../../../static.files/main-eebb9057.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-32bb7600.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-6580c154.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"></head><body class="rustdoc mod"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle" title="show sidebar"></button></nav><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../../starlark/index.html">starlark</a><span class="version">0.13.0</span></h2></div><div class="sidebar-elems"><section id="rustdoc-toc"><h2 class="location"><a href="#">Module any</a></h2><h3><a href="#structs">Module Items</a></h3><ul class="block"><li><a href="#structs" title="Structs">Structs</a></li></ul></section><div id="rustdoc-modnav"><h2><a href="../index.html">In starlark::<wbr>values</a></h2></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="../../index.html">starlark</a>::<wbr><a href="../index.html">values</a></div><h1>Module <span>any</span><button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../../../src/starlark/values/types/any.rs.html#18-129">Source</a> </span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>A type <a href="struct.StarlarkAny.html" title="struct starlark::values::any::StarlarkAny"><code>StarlarkAny</code></a> which can cheaply wrap any Rust value into a <a href="../struct.Value.html" title="struct starlark::values::Value"><code>Value</code></a>.</p>
+<p>This is intended to be a low cost way to quickly wrap Rust types without much boilerplate.
+For more advanced uses you should define an instance of <a href="../trait.StarlarkValue.html" title="trait starlark::values::StarlarkValue"><code>StarlarkValue</code></a>.</p>
+<p>To use this type, usually you will return a <a href="struct.StarlarkAny.html" title="struct starlark::values::any::StarlarkAny"><code>StarlarkAny</code></a> from a module function,
+and consume it in another. As an example, we can cheaply wrap the
+<a href="https://doc.rust-lang.org/nightly/core/time/struct.Duration.html" title="struct core::time::Duration"><code>Duration</code></a> type.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="attr">#[macro_use]
+</span><span class="kw">extern crate </span>starlark;
+<span class="kw">use </span>std::fmt;
+<span class="kw">use </span>std::time::Instant;
+
+<span class="kw">use </span>starlark::assert::Assert;
+<span class="kw">use </span>starlark::environment::GlobalsBuilder;
+<span class="kw">use </span>starlark::values::Value;
+<span class="kw">use </span>starlark::values::any::StarlarkAny;
+
+<span class="attr">#[derive(Debug)]
+</span><span class="kw">struct </span>MyInstant(Instant);
+
+<span class="attr">#[starlark_module]
+</span><span class="kw">fn </span>globals(builder: <span class="kw-2">&amp;mut </span>GlobalsBuilder) {
+    <span class="kw">fn </span>start() -&gt; anyhow::Result&lt;StarlarkAny&lt;MyInstant&gt;&gt; {
+        <span class="prelude-val">Ok</span>(StarlarkAny::new(MyInstant(Instant::now())))
+    }
+
+    <span class="kw">fn </span>elapsed(x: Value) -&gt; anyhow::Result&lt;String&gt; {
+        <span class="prelude-val">Ok</span>(StarlarkAny::&lt;MyInstant&gt;::get(x)
+            .unwrap()
+            .<span class="number">0
+            </span>.elapsed()
+            .as_secs_f64()
+            .to_string())
+    }
+}
+
+<span class="kw">let </span><span class="kw-2">mut </span>a = Assert::new();
+a.globals_add(globals);
+a.pass(
+    <span class="string">r#"
+instant = start()
+print(elapsed(instant))
+"#</span>,
+);</code></pre></div>
+</div></details><h2 id="structs" class="section-header">Structs<a href="#structs" class="anchor">§</a></h2><dl class="item-table"><dt><a class="struct" href="struct.StarlarkAny.html" title="struct starlark::values::any::StarlarkAny">Starlark<wbr>Any</a></dt><dd>A type that can be passed around as a Starlark <a href="../struct.Value.html" title="struct starlark::values::Value"><code>Value</code></a>, but in most
+ways is uninteresting/opaque to Starlark. Constructed with
+<a href="struct.StarlarkAny.html#method.new" title="associated function starlark::values::any::StarlarkAny::new"><code>new</code></a> and decomposed with <a href="struct.StarlarkAny.html#method.get" title="associated function starlark::values::any::StarlarkAny::get"><code>get</code></a>.</dd></dl></section></div></main></body></html>

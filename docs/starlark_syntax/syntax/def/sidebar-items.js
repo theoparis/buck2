@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["DefParamKind","DefRegularParamMode"],"struct":["DefParam","DefParamIndices","DefParams"]};

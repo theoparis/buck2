@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["get_sysinfo_status","kill","process_creation_time","process_exists"],"struct":["KilledProcessHandle"]};

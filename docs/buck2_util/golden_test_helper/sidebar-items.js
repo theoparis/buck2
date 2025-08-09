@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["golden_test_template","trim_rust_backtrace"]};

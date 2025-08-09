@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["assert_frame_contains","frame_contains","test_console","test_console_aux_incompatible"],"struct":["TestOutput"],"trait":["SuperConsoleTestingExt"]};

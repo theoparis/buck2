@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["DocItem","DocMember","DocStringKind","FmtParam"],"mod":["code","markdown","multipage"],"struct":["DocFunction","DocModule","DocParam","DocParams","DocProperty","DocReturn","DocString","DocType"]};

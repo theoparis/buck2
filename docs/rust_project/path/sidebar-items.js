@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["canonicalize","canonicalize_to_vcs_path","safe_canonicalize"]};

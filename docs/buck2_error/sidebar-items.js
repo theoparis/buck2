@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"derive":["Error"],"enum":["ErrorTag","ExitCode","Tier"],"fn":["Ok","provide_metadata"],"macro":["buck2_error","internal_error"],"mod":["any","classify","conversion","macros","source_location","starlark_error"],"struct":["Error","UniqueRootId"],"trait":["BuckErrorContext","TypedContext"],"type":["DynLateFormat","Result"]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"attr":["starlark_internal_bc","starlark_internal_vtable","starlark_module","starlark_value"],"derive":["AllocFrozenValue","AllocValue","Coerce","Freeze","NoSerialize","ProvidesStaticType","StarlarkAttrs","StarlarkTypeRepr","Trace","UnpackValue","VisitSpanMut"],"macro":["starlark_attrs"]};

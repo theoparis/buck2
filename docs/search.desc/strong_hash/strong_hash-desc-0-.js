@@ -1,0 +1,1 @@
+searchState.loadedDescShard("strong_hash", 0, "<code>StrongHash`` is a trait that is notionally similar to </code>…\nA wrapper can be used to implement <code>Hash</code> using the inner …\nReturns the argument unchanged.\nCalls <code>U::from(self)</code>.")

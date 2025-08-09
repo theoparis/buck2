@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"type":["EnumType","EnumValue","FrozenEnumType","FrozenEnumValue"]};

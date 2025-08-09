@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["DiceErrorImpl"],"mod":["cycles","result"],"struct":["DiceError"],"type":["DiceResult"]};

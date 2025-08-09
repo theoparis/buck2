@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["AllocDict","Dict","DictMut","DictRef","DictType","FrozenDictRef","UnpackDictEntries"]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["ErrorCategory"],"mod":["device_metadata","installer_client","installer_server"],"struct":["DeviceMetadata","ErrorDetail","FileReadyRequest","FileResponse","InstallInfoRequest","InstallResponse","ShutdownRequest","ShutdownResponse"]};

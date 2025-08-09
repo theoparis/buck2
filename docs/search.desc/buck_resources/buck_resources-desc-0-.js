@@ -1,0 +1,1 @@
+searchState.loadedDescShard("buck_resources", 0, "Returns the argument unchanged.\nLook up a resource based on a manifest file. Built to work …\nCalls <code>U::from(self)</code>.")

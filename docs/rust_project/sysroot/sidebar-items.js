@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["SysrootConfig"],"fn":["resolve_buckconfig_sysroot","resolve_rustup_sysroot"]};

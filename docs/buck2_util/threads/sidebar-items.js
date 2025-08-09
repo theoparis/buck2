@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["available_parallelism","available_parallelism_fresh","check_stack_overflow","ignore_stack_overflow_checks_for_current_thread","ignore_stack_overflow_checks_for_future","thread_spawn","thread_spawn_scoped"],"struct":["IgnoreStackOverflowChecksForCurrentThread"]};

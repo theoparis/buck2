@@ -1,0 +1,1 @@
+searchState.loadedDescShard("buck2_downward_api", 0, "The downward api for external processes. This crate …\nThe API available to processes that Buck will need to …\nindicates to print to the console at a specific log level\nreports an externally consumable event containing some …\nindicates to log at a specified level TODO consider if we …")

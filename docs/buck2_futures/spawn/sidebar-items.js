@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["WeakFutureError"],"fn":["spawn_dropcancel"],"struct":["CancellableJoinHandle","DropcancelJoinHandle"]};
