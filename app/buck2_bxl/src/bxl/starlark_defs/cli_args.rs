@@ -601,7 +601,8 @@ impl CliArgType {
         async move {
             Ok(match self {
                 CliArgType::Bool => clap.value_of().map_or(Ok(None), |x| {
-                    let r: buck2_error::Result<_> = try { CliArgValue::Bool(x.parse::<bool>()?) };
+                    let r: buck2_error::Result<_> =
+                        try { CliArgValue::Bool(x.parse::<bool>().map_err(Into::into)?) };
                     r.map(Some)
                 })?,
                 CliArgType::Int => clap.value_of().map_or(Ok(None), |x| {
@@ -616,7 +617,7 @@ impl CliArgType {
                 CliArgType::Float => clap.value_of().map_or(Ok(None), |x| {
                     let r: buck2_error::Result<_> = try {
                         CliArgValue::Float({
-                            x.parse::<f64>()?;
+                            x.parse::<f64>().map_err(Into::into)?;
                             x.to_owned()
                         })
                     };

@@ -207,8 +207,9 @@ impl Action for WriteJsonAction {
         fs: &ExecutorFs,
         artifact_path_mapping: &dyn ArtifactPathMapper,
     ) -> IndexMap<String, String> {
-        let res: buck2_error::Result<String> =
-            try { String::from_utf8(self.get_contents(fs, artifact_path_mapping)?)? };
+        let res: buck2_error::Result<String> = try {
+            String::from_utf8(self.get_contents(fs, artifact_path_mapping)?).map_err(Into::into)?
+        };
         // TODO(cjhopman): We should change this api to support returning a Result.
         indexmap! {
             "contents".to_owned() => match res {

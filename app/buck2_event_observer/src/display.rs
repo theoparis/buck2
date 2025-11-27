@@ -239,18 +239,18 @@ pub fn display_event(event: &BuckEvent, opts: TargetDisplayOptions) -> buck2_err
                 let build = &materialization
                     .artifact
                     .as_ref()
-                    .ok_or(ParseEventError::MissingArtifact)?;
+                    .ok_or(ParseEventError::MissingArtifact.into())?;
 
                 let key = display_action_key(
                     build
                         .key
                         .as_ref()
-                        .ok_or(ParseEventError::MissingActionKey)?,
+                        .ok_or(ParseEventError::MissingActionKey.into())?,
                     opts,
                 )?;
                 let path = {
                     if build.path.is_empty() {
-                        Err(ParseEventError::MissingMaterializationPath)
+                        Err(ParseEventError::MissingMaterializationPath.into())
                     } else {
                         Ok(&build.path)
                     }

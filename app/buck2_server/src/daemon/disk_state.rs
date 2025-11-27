@@ -212,8 +212,8 @@ pub(crate) fn delete_unknown_disk_state(
 ) -> buck2_error::Result<()> {
     let res: buck2_error::Result<()> = try {
         if cache_dir_path.exists() {
-            for entry in fs_util::read_dir(cache_dir_path)? {
-                let entry = entry?;
+            for entry in fs_util::read_dir(cache_dir_path).map_err(Into::into)? {
+                let entry = entry.map_err(Into::into)?;
                 let filename = entry.file_name();
                 let filename = filename
                     .to_str()
@@ -222,7 +222,7 @@ pub(crate) fn delete_unknown_disk_state(
 
                 // known_dir_names is always small, so this contains isn't expensive
                 if !known_dir_names.contains(&filename) || !entry.path().is_dir() {
-                    fs_util::remove_all(cache_dir_path.join(filename))?;
+                    fs_util::remove_all(cache_dir_path.join(filename)).map_err(Into::into)?;
                 }
             }
         }

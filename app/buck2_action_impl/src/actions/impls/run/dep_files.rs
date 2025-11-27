@@ -1428,7 +1428,8 @@ impl DeclaredDepFiles {
 
             let read_dep_file: buck2_error::Result<()> = try {
                 let dep_file_path = fs.fs().resolve(&dep_file);
-                let dep_file = fs_util::read_to_string_if_exists(&dep_file_path)?;
+                let dep_file =
+                    fs_util::read_to_string_if_exists(&dep_file_path).map_err(Into::into)?;
 
                 let dep_file = match dep_file {
                     Some(dep_file) => dep_file,
