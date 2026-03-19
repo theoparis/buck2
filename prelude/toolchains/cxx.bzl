@@ -15,6 +15,7 @@ load(
     "CxxInternalTools",
     "CxxPlatformInfo",
     "CxxToolchainInfo",
+    "ObjcCompilerInfo",
     "DepTrackingMode",
     "LinkerInfo",
     "LinkerType",
@@ -186,6 +187,14 @@ def _cxx_toolchain_from_cxx_tools_info(ctx: AnalysisContext, cxx_tools_info: Cxx
                 bolt_msdk = None,
             ),
             cxx_compiler_info = CxxCompilerInfo(
+                compiler = _run_info(cxx_tools_info.cxx_compiler),
+                preprocessor_flags = [],
+                compiler_flags = ctx.attrs.cxx_flags,
+                compiler_type = cxx_tools_info.compiler_type,
+                supports_two_phase_compilation = supports_two_phase_compilation,
+                supports_content_based_paths = ctx.attrs.supports_content_based_paths,
+            ),
+            objc_compiler_info = ObjcCompilerInfo(
                 compiler = _run_info(cxx_tools_info.cxx_compiler),
                 preprocessor_flags = [],
                 compiler_flags = ctx.attrs.cxx_flags,
